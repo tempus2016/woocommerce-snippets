@@ -1,0 +1,38 @@
+add_action( 'woocommerce_before_shop_loop_item_title', 'show_sale_percentage_loop', 25 );
+ 
+function show_sale_percentage_loop() {
+global $product;
+if ( $product->is_on_sale() ) {
+if ( ! $product->is_type( 'variable' ) ) {
+$max_percentage = round( ( ( $product->regular_price - $product->sale_price ) / $product->regular_price ) * 100 );
+} else {
+foreach ( $product->get_children() as $child_id ) :
+$variation = $product->get_child( $child_id );
+$price = $variation->get_regular_price();
+$sale = $variation->get_sale_price();
+$percentage = $price != 0 && ! empty( $sale ) ? ( ( $price - $sale ) / $price * 100 ) : $max_percentage;
+if ( $percentage >= $highest_percentage ) :
+    $max_percentage = $percentage;
+    $regular_price = $product->get_variation_regular_price( 'min' );
+    $sale_price = $product->get_variation_sale_price( 'min' );
+endif;
+endforeach;
+}
+  
+  ?>
+	<style>
+	.sale-perc {
+background-color: #D9534F;
+display: inline;
+padding: .2em .6em .3em;
+font-weight: bold;
+color: #fff;
+text-align: center;
+border-radius: .25em;
+margin-bottom: 0.1em;
+}
+  </style>
+	<?php
+echo "<div class='sale-perc'>" . round($max_percentage) . "% OFF</div>";
+}
+}
