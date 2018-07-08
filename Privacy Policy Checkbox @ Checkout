@@ -1,0 +1,24 @@
+//Add privacy policy tick box
+ 
+add_action('woocommerce_review_order_before_submit', 'add_privacy_checkout_tickbox', 9);
+  
+function add_privacy_checkout_tickbox() {
+ 
+?>
+    
+<p class="form-row terms privacycheck">
+<input type="checkbox" class="input-checkbox" name="privacycheck" id="privacycheck" />
+<label for="privacycheck" class="checkbox" style="font-weight: normal;">I’ve read and accept the <a href="/privacy-policy" target="_blank">privacy policy</a> <span class="required">*</span></label>
+</p>
+ 
+<?php
+}
+ 
+// Show notice if customer does not tick
+  
+add_action('woocommerce_checkout_process', 'not_approved_privacy');
+ 
+function not_approved_privacy() {
+    if ( ! $_POST['privacycheck'] )
+        wc_add_notice( __( 'Please acknowledge the privacy policy' ), 'error' );
+}
